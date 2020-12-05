@@ -100,7 +100,6 @@ def read_rx_files(rx_files,mode,verbose=True):
         print('Shared between all files',len(common_keys),sep=',')
     new = {}
     for f_name, sub_dict in rx_data.items():
-        #s_name = f_name.replace('.react','').replace('.rtsc','')
         s_name = rm_ext(f_name,'.rtsc','.react')
         for transcript, data in sub_dict.items():
             new.setdefault(transcript,{})[s_name] = data
