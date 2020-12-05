@@ -1,7 +1,6 @@
 # StructureFold3 <img src='assets/sf3_logo.png' align='right' width='400px' />
 
-This is a work in progress, porting StructureFold2 into Python3.
-</br></br></br>
+StructureFold2 is being ported into Python3. 
 
 + The manual will be reworked/updated into both markdown and pdf formats. 
 + Modules will be added as they are ported/updated.
