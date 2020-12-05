@@ -2,13 +2,11 @@
 
 This is a work in progress, porting StructureFold2 into Python3.
 </br></br></br>
-The manual will be reworked/updated into both markdown and pdf formats. Modules 
-will be added one at a time as they are ported 
-over/updated, so it could be a while before SF3 is ready for use; SF2 is still 
-the 'official' version of StructureFold for the time being. 
 
-All file formats will be fully interchangable between SF2 and SF3; data
-processed by either should be cross-compatible.
++ The manual will be reworked/updated into both markdown and pdf formats. 
++ Modules will be added as they are ported/updated.
++ SF2 is still the 'official' version of StructureFold for the time being. 
++ SF2 and SF3 will be cross-compatible.
 
 **Software Dependencies**
 + [Python 3](https://www.python.org/)
