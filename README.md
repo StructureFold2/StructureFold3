@@ -35,13 +35,15 @@ adopted a more unified framework. Most modules will no longer utilize glob
 to pick input files automatically.
 
 + fasta_composition has been reworked into fasta_statistics. It is now
-agnostic to the type of sequence (nucleotide/amino acid, or anything!),
-and takes a threshold value (default 1%) of the entire file to determine 
+agnostic to the type of sequence (nucleotide/amino acid), and takes a
+threshold value (default 1%) of the entire file to determine 
 the columns to report.
 
 ## Upcoming Changes
 
-+ Groundwork for new manual is in place.
++ Manual will be worked on, easier to import modules will come first.
+
++ Comprehensive testing against the SF2 versions of the modules.
 
 + Merge sam_filter and sam_to_rtsc, making this step one module. Although
 samtools is ubiquitous, the future module will probably be pure Python. Therefore
