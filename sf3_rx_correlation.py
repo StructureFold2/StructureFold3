@@ -38,11 +38,11 @@ def write_react_repeatability(react_data,sequences,out_fyle,specificity='ACGT'):
 
 def write_rtsc_repeatability(rtsc_data,sequences,out_fyle,specificity='ACGT'):
    '''Writes out the rtsc correlation data. The offset (1) is built in'''
-   all_keys = sorted(set.union(*map(set,react_data.values())))
+   all_keys = sorted(set.union(*map(set,rtsc_data.values())))
    header=','.join(['transcript','position','base']+all_keys)
    with open(out_fyle,'w') as g:
        g.write(header+'\n')
-       for transcript, data in react_data.items():
+       for transcript, data in rtsc_data.items():
            temp_data = [data.get(key,'NA'*len(sequences[transcript]))[1:] for key in all_keys]
            for pos, base in enumerate(sequences[transcript][:-1],1):
                if base in specificity:
@@ -53,21 +53,22 @@ def write_rtsc_repeatability(rtsc_data,sequences,out_fyle,specificity='ACGT'):
 #Workflow
 def main():
     parser = argparse.ArgumentParser(description='Reformats <.rtsc>/<.react> for easy correlation analysis')
-    parser.add_argument('fasta',help='Reference Fasta')
-    parser.add_argument('rx',help='Input <.rx> files', nargs='+')
-    parser.add_argument('-restrict',default=None, help='Filter to these transcripts via coverage file')
-    parser.add_argument('-name',default=None, help='Specify output file name')
-    parser.add_argument('-bases',default='AGCT', help='[ACGT] Nucleotide specifictiy')
-    parser.add_argument('-verbose',action='store_true', help='Display metrics')
+    in_files = parser.add_argument_group('Input')
+    in_files.add_argument('fasta',help='Reference Fasta')
+    in_files.add_argument('rx',help='Input <.rx> files',nargs='+')
+    settings = parser.add_argument_group('Settings')
+    settings.add_argument('-verbose',action='store_true',help='Display metrics')
+    settings.add_argument('-bases',default='AGCT',metavar='ACGT',help='[default = ACGT] Nucleotide specifictiy')
+    settings.add_argument('-restrict',default=None,metavar='<.txt>',help='Filter to these transcripts via coverage file')
+    out_files = parser.add_argument_group('Output')
+    out_files.add_argument('-name',default=None,help='Specify output file name')
     args = parser.parse_args()
 
     #Set up
     covered = sfio.read_restrict(args.restrict) if args.restrict else None
     fasta_dict = sfio.read_fasta(args.fasta)
-    #desc = [x.replace('.rtsc','').replace('.react','') for x in args.rx]
-    desc = [sfio.rm_ext(x,'.rtsc','.react') for x in args.rx)
-    
-    
+    desc = [sfio.rm_ext(x,'.rtsc','.react') for x in args.rx]
+
     #All files are <.rtsc>
     if all(fyle.split('.')[-1] == 'rtsc' for fyle in args.rx):
         rx_data = sfio.read_rx_files(args.rx,mode='rtsc',verbose=args.verbose)

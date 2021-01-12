@@ -6,8 +6,8 @@ Requires the base <.fasta> the <.react> files were generated with.
 '''
 
 #Imports
-import argparse
 import os
+import argparse
 import sf3libs.sf3io as sfio
 
 #Functions
@@ -34,12 +34,14 @@ def batch_write_out_csv(sequence_dict,values_dict,name_suffix,outdyr):
 
 def main():
     parser = argparse.ArgumentParser(description='Reformats reactivity values to <.csv> format')
-    parser.add_argument('react',type=str,help = '<.react> file to pull values from')
-    parser.add_argument('fasta',type=str,help = '<.fasta> file used to generate the <.react>')
-    parser.add_argument('-mode',type=str.upper,default = None,choices = ['S','M'],help='Single or Multi-Transcript mode')
-    parser.add_argument('-transcript',default = None,type=str,help='[S] Specific Transcript to reformat',dest='name')
-    parser.add_argument('-restrict',default = None, help = '[M] Limit analysis to these specific transcripts <.txt>')
-    parser.add_argument('-outdir',type=str,default = None, help='[M] Name of the out directory, overrides default')
+    in_files = parser.add_argument_group('Input')
+    in_files.add_argument('react',type=str,help = 'File to pull values from')
+    in_files.add_argument('fasta',type=str,help = 'File used to generate the <.react>')
+    settings = parser.add_argument_group('Settings')
+    settings.add_argument('-mode',type=str.upper,default=None,choices=['S','M'],help='Single or Multi-Transcript mode')
+    settings.add_argument('-transcript',default = None,type=str,help='[S] Specific Transcript to reformat',dest='name')
+    settings.add_argument('-restrict',default=None,metavar='<.txt>',help='[M] Limit analysis to these specific transcripts')
+    settings.add_argument('-outdir',type=str,default = None, help='[M] Name of the out directory, overrides default')
     args = parser.parse_args()
 
     #Read in files
