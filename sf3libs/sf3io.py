@@ -2,6 +2,7 @@
 import itertools
 from Bio import SeqIO
 
+#Functions
 def check_extension(astring,extension):
     '''Checks and fixes things to have the proper extension'''
     out_string = astring if astring.endswith(extension) else astring + extension
@@ -50,12 +51,12 @@ def write_fasta(info,outfyle='out.fasta',sort_flag=False,line_width=80):
         if sort_flag:
             for name,seq in sorted(info.items()):
                 g.write('>'+ name+'\n')
-                for i in xrange(0,len(seq),line_width):
+                for i in range(0,len(seq),line_width):
                     g.write(seq[i:i+line_width]+'\n')
         else:
             for name,seq in info.items():
                 g.write('>'+ name+'\n')
-                for i in xrange(0,len(seq),line_width):
+                for i in range(0,len(seq),line_width):
                     g.write(seq[i:i+line_width]+'\n')
 
 def write_react(react_dictionary,outfile='data.react',sort_flag=False):
