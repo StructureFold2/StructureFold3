@@ -1,1 +1,1 @@
-# These are any graphical or other assets are stored.
+# This is where graphical or other assets are stored
