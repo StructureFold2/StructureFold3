@@ -1,1 +1,1 @@
-#This is where the manual will be put
+# These are the files for StructureFold3 user manual
