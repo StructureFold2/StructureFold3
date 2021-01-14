@@ -39,6 +39,10 @@ agnostic to the type of sequence (nucleotide/amino acid), and takes a
 threshold value (default 1%) of the entire file to determine 
 the columns to report.
 
++ rtsc_specificity has been reworked into sf3_rtsc_specificity. Input
+options have been harmonized with the newer modules, and the output 
+file is more consistently organized. 
+
 ## Upcoming Changes
 
 + Manual will be worked on, easier to import modules will come first.
@@ -47,4 +51,10 @@ the columns to report.
 
 + Merge sam_filter and sam_to_rtsc, making this step one module. Although
 samtools is ubiquitous, the future module will probably be pure Python. Therefore
-samtools will probably be removed from the dependencies. 
+samtools will probably be removed from the dependencies.
+
++ Rework batch_fold_rna entirely. The input files and options need updating,
+and a consistency check needs to be added between the fasta/react. 
+Although the module supports multi-threading, it currently distributes
+one thread per RNA regardless of the RNA's length. The future version
+will call Fold-smp and use all specified cores to fold one RNA at a time.
