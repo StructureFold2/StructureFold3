@@ -51,7 +51,8 @@ file is more consistently organized.
 
 + Merge sam_filter and sam_to_rtsc, making this step one module. Although
 samtools is ubiquitous, the future module will probably be pure Python. Therefore
-samtools will probably be removed from the dependencies.
+samtools will probably be removed from the dependencies. The future module
+will filter mappings while generating <.rtsc>. 
 
 + Rework batch_fold_rna entirely. The input files and options need updating,
 and a consistency check needs to be added between the fasta/react. 
