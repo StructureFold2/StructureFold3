@@ -13,7 +13,6 @@ StructureFold2 is being ported into Python3.
 + [BioPython](https://biopython.org/)
 + [Numpy](https://numpy.org/)
 + [Cutadapt](https://cutadapt.readthedocs.io/en/stable/)
-+ [SAMtools](http://samtools.sourceforge.net/)
 + [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
 
 **Recommended Software**
@@ -36,23 +35,29 @@ to pick input files automatically.
 
 + fasta_composition has been reworked into fasta_statistics. It is now
 agnostic to the type of sequence (nucleotide/amino acid), and takes a
-threshold value (default 1%) of the entire file to determine 
+threshold value (default 1%) of the entire file composition to determine 
 the columns to report.
 
 + rtsc_specificity has been reworked into sf3_rtsc_specificity. Input
 options have been harmonized with the newer modules, and the output 
 file is more consistently organized. 
 
++ sam_filter and sam_to_rtsc have been merged into sf3_sam_to_rtsc, 
+encapsulating this step into a single module. Samtools has been removed
+from the dependencies, as the new module performs all filtering entirely 
+in Python without calling samtools or generating intermediate files.
+Logfiles now have a column for number of reads excluded due to bitflag
+based parameters, where in SF2, this would be the difference between
+sam_lines and filtered_lines. See the new manual entry for more details.
+The current StructureSeq2 protocol does not typically generate paired-end reads,
+but building them into this rework would be much eaiser than using the
+old methodology.
+
 ## Upcoming Changes
 
 + Manual will be worked on, easier to import modules will come first.
 
 + Comprehensive testing against the SF2 versions of the modules.
-
-+ Merge sam_filter and sam_to_rtsc, making this step one module. Although
-samtools is ubiquitous, the future module will probably be pure Python. Therefore
-samtools will probably be removed from the dependencies. The future module
-will filter mappings while generating <.rtsc>. 
 
 + Rework batch_fold_rna entirely. The input files and options need updating,
 and a consistency check needs to be added between the fasta/react. 
