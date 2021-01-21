@@ -116,3 +116,55 @@ Settings:
 Output:
   -name NAME        Specify output file name
 ```
+
+### sf3_rtsc_specificity.py
+This module calculates the reverse transcriptase stop specificity using
+<.rtsc> files and the fasta they were generated against. Hence, comparing 
+treated and untreated samples will detail the 
+
+```
+Analyzes native/reagent nucleotide RT stop specificity
+
+optional arguments:
+  -h, --help      show this help message and exit
+
+Input:
+  index           Fasta used to generate the <.rtsc>
+  rtsc            Input <.rtsc>
+
+Settings:
+  -report REPORT  Include these nucelotides in report
+  -round DIGITS   [default = 5] Decimal places to report
+
+Output:
+  -name NAME      Specify output file name
+```
+
+### sf3_sam_to_rtsc.py
+This module filters mapped reads in SAM format, extracting the implied
+reverse transcriptase (RT) stops that pass the default and/or user
+defined criteria. These stops are then written to a Reverse Transcriptase
+Stop Count <.rtsc> file to represent these stops in subsequent analysis steps.
+
+```
+Converts <.sam> into reverse transcriptase stop files <.rtsc>
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Input:
+  fasta                 Index Fasta File
+  sam                   Input SAM file(s)
+
+Settings:
+  -mismatches <number>  [default = 3] Maximum allowed mismatches/indels
+  -firstmm              Accept alignments with first base mismatches
+  -reverse              Accept alignments to the reverse strand
+  -rm_secondary         Remove secondary alignments
+
+Output:
+  -logname LOGNAME      [default = filter_log.csv] Log file name
+```
+
+
+
