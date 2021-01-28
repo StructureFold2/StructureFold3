@@ -166,5 +166,28 @@ Output:
   -logname LOGNAME      [default = filter_log.csv] Log file name
 ```
 
+### sf3_fasta_stepwise.py
+This module is designed to break up large sequences into smaller
+'sliding windows', so that small, granular segments can be folded
+and further studied. 
 
+
+```
+Splits sequences into sliding window segments
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+Input:
+  fasta       Input Fasta File
+
+Settings:
+  -size SIZE  [default = 10] Size of the Windows
+  -step STEP  [default = 5] Step of the Windows
+
+Output:
+  -name NAME  Specify output file name
+  -sort_file  Sort the output by name
+
+```
 
