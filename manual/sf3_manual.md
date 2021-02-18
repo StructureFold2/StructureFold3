@@ -191,3 +191,52 @@ Output:
 
 ```
 
+### sf3_batch_fold.py
+This module batch runs RNAStructure's Fold or partition on transcript or oligo
+sets, with the option to use <.react> files as restraints/constraints. Thus,
+RNAStructure must be installed, configured, and accesssible in the path. Input
+sequences are prescreened to prevent errors when folding; the min and max length
+tolerated can be assigned (-minlen, -maxlen), and any discrepancies between a
+sequence and any restraints/constraints will be recorded (-errorname to change log name)
+as a desynch error.
+
+
+
+```
+Batch runs folding programs
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Input:
+  fasta                 Reference Fasta File
+
+Settings:
+  -mode {R,V}           RNAStructure or Vienna
+  -react <.react>       React file to use as restraints/constraints
+  -restrict <.txt>      Limit folding to these specific transcripts
+  -temp TEMP            [default = 310.15] Temperature to use for folding
+  -cores CORES          [default = 4] Number of cores to use
+  -distance DISTANCE    [default = 99999] Maximum pairing distance
+  -minlen MINLEN        [default = 10] Minimum length to fold
+  -maxlen MAXLEN        [default = 5000] Maximum length to fold
+  -truncate TRUNCATE    [default = 0] Ignore <.react> for last N nucleotides
+  -threshold TH         Apply hard constraints using this threshold
+
+RNAStructure Settings:
+  -slope SLOPE          [default = 1.8] Parameter for RNAstructure
+  -intercept INTERCEPT  [default = -0.6] Parameter for RNAstructure
+  -partition            Use the partition function
+  -multiple             Output all structures rather than just MFE
+
+Output:
+  -errorname ERRORNAME  Name the error log
+  -paraname PARANAME    Name the parameter log
+  -outdir OUTDIR        Name the out directory
+  -ct CT                Name the ct folder
+  -ps PS                Name the ps folder
+  -bp BP                Name the bp folder (Partition Only)
+  -pfs PFS              Name the pfs folder (Partition Only)
+
+```
+
