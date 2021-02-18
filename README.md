@@ -53,14 +53,20 @@ The current StructureSeq2 protocol does not typically generate paired-end reads,
 but building them into this rework would be much eaiser than using the
 old methodology.
 
++ batch_fold_rna has been reworked into sf3_batch_fold.
+This module has been entirely re-written from scratch. Input(s) are
+pre-screened for all potential errors, details of which are logged to
+a single file in the out directory. Run parameters are saved to a separate
+parameter log in the out directory, rather than as the name of the out directory.
+Instead of using 'Fold' and 'partition', the '-smp' versions of these
+programs are called. Allocating one core per RNA turned out to be
+inefficient, as one core was devoted to both long and short RNAs, hence
+there was a lot of time waiting on the longer folds. This module is now
+much more maintainable and upgradeable. Vienna package support is not
+yet implemented pending any requests for it. See the manual entry for more details.
+
 ## Upcoming Changes
 
 + Manual will be worked on, easier to import modules will come first.
 
 + Comprehensive testing against the SF2 versions of the modules.
-
-+ Rework batch_fold_rna entirely. The input files and options need updating,
-and a consistency check needs to be added between the fasta/react. 
-Although the module supports multi-threading, it currently distributes
-one thread per RNA regardless of the RNA's length. The future version
-will call Fold-smp and use all specified cores to fold one RNA at a time.

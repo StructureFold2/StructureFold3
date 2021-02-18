@@ -39,15 +39,15 @@ def main():
     rx_data = sfio.read_rx_files(sorted(args.react),'.react',verbose=False)
     
     #Filter by coverage
-    covered = sfio.read_restrict(args.restrict) if args.restrict else None
-    if args.restrict:
-            rx_data = {n:s for n,s in rx_data.items() if n in covered}
+    restrict = sfio.read_restrict(args.restrict) if args.restrict else None
+    if restrict:
+            rx_data = {n:s for n,s in rx_data.items() if n in restrict}
 
     #Nomenclature
     name_1 = sorted([x.replace('.react','') for x in in_files])
     name_2 = [str(qq)+q for qq,q in zip([args.trim,args.minlen],['trim','minlen'])]
     default_name = '_'.join(name_1+name_2+['statistics'])+'.csv'
-    out_name = default_name if args.name == None else sfio.check_extension(args.name,'.csv')
+    out_name = sfio.check_extension(args.name,'.csv') if args.name else default_name
 
     #Write Out File
     write_out_stats(data,out_name,args.trim,args.minlen)

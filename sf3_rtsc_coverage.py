@@ -67,7 +67,7 @@ def main():
     
     #Generate or assign name
     default_name = '_'.join(sorted([fyle.replace('.rtsc','') for fyle in args.f])+['coverage'])+'.csv'
-    out_name = default_name if args.name == None else sfio.check_extension(args.name,'.csv')
+    outname = sfio.check_extension(args.name,'.csv') if args.name else default_name
     
     #Collect Data
     coverage_data = collect_coverages(args.f,args.index,args.bases)
