@@ -21,20 +21,22 @@ StructureFold3 is the Python3 successor to [Structurefold2](https://github.com/S
 + [R](https://www.r-project.org/) (@team2013r)
 
 StructureFold3 is a set of Python3 scripts designed to process Structure-seq
-(@ding2015genome, @ding2014vivo, @ritchey2017structure) or other high-throughput libraries generated to yield 
-reverse transcription stops via chemically probing RNA structure into reactivity values at the single nucleotide level (structurome).
-These reactivity values may be used to guide folding with RNAstructure (@reuter2010rnastructure) or similar software, 
-greatly enhancing structure prediction with *in-vivo* probing data. This package allows a user with a minimal computational
-or statistical background to execute a number of mostly automated processes to assemble *in-vivo* reverse transcriptase stops collected by
-chemical probing and derive reactivity values indicative of the probability of base pair strandedness, thus generating
-a reasonable facsimile of the actual *in-vivo* RNA structurome.
+(@ding2015genome, @ding2014vivo, @ritchey2017structure) or other high-throughput libraries
+generated to yield reverse transcription stops via chemically probing RNA structure into reactivity
+values at the single nucleotide level (structurome).These reactivity values may be used to guide folding
+with RNAstructure (@reuter2010rnastructure) or similar software, greatly enhancing structure prediction
+with *in-vivo* probing data. This package allows a user with a minimal computationalor statistical
+background to execute a number of mostly automated processes to assemble *in-vivo* reverse transcriptase
+stops collected by chemical probing and derive reactivity values indicative of the probability of base pair
+strandedness, thus generating a reasonable facsimile of the actual *in-vivo* RNA structurome.
 
-Ultimately, the final design and analysis of the data is up to the experimenter; data may be piped into RNAstructure
-to obtain predicted folds of transcripts, or the experimenter may choose to directly analyze the derived chemical
-reactivity or raw RT stop values in any way that suits their experimental design with typical statistical packages, such as R
-(@team2013r). StructureFold3 is amenable to a variety of chemical probes (e.g. DMS, glyoxal, SHAPE), provided a negative 
-reagent control library is included. Structurefold3 is designed to be modularl; steps and programs can be modified to accomodate
-unforseen experimental, chemical, or biological experimental constraints.
+Ultimately, the final design and analysis of the data is up to the experimenter; data may be piped
+into RNAstructure to obtain predicted folds of transcripts, or the experimenter may choose to directly
+analyze the derived chemical reactivity or raw RT stop values in any way that suits their experimental
+design with typical statistical packages, such as R (@team2013r). StructureFold3 is amenable to a variety
+of chemical probes (e.g. DMS, glyoxal, SHAPE), provided a negative reagent control library is included.
+Structurefold3 is designed to be modularl; steps and programs can be modified to accomodate unforseen
+experimental, chemical, or biological experimental constraints.
 
 ## Walkthrough
 
@@ -46,9 +48,9 @@ used; the <.fasta> you initially choose that contains this information may not b
 Some Eukaryotes contain an excessive number of transcript isoforms per gene, which may complicate downstream analyses, and
 it may be wise to prune to no more than two isoforms per gene to map against. Selecting the most abundant isoform based
 on other techniques or experiments is an alternative approach to reduce the number of included transcripts per gene and
-enhance the precision of reactivity values and the simplicity of all downstream analyses. Ensembl (yates2020ensembl) is a great place to
-look for transcriptome (cDNA) files if one has not already been selected to map against, although absolutely any <.fasta>
-file containing transcripts will work provided the transcripts are of sufficient length.
+enhance the precision of reactivity values and the simplicity of all downstream analyses. Ensembl (yates2020ensembl) is
+a great place to look for transcriptome (cDNA) files if one has not already been selected to map against, although absolutely
+any <.fasta> file containing transcripts will work provided the transcripts are of sufficient length.
 
 **Ensembl Transcriptome Sources**
 
@@ -63,7 +65,7 @@ features will not encounter trouble mapping. To ensure that transcript annotatio
 subdivide features for individual analysis, check to ensure the start and stop coordinates of each of
 these features are included with the annotation or an associated <.gtf> or <.gff> file. At this time
 we are unable to provide an automated script to handle annotation and automatically perform this
-subdividison due to the lack of a consistent annotation file standard, but it could be included in a future version.
+subdividison due to differences in annotation standards, but it could be included in a future version.
 
 StructureFold3 is not a computationally demanding package by itself. Bowtie2, the recommended short read aligner,
 is likewise lightweight and not exceptionally demanding on most hardware, even on larger transcriptomes and data sets.
@@ -94,9 +96,10 @@ provided on respective websites and documentation. Many of these packages are co
 native to either Linux or MacOS systems. For a listing of these dependencies, check the top of page 1. Depending how
 these are installed, permissions and the path may need to be set up for each dependency. StructureFold3 will automatically
 call some of these programs. To check that  you have successfully installed StructureFold3 and all of the core dependencies,
-try executing the test script, sf3_test_sf3.py, in a new shell. The script will notify the user of any missing dependencies
-that are not available in the path or for which the user does not have adequate permissions to run. If you plan to customize
-the StructureFold3 pipeline and forgo the use of suggested trimming software, these dependencies do not need to be installed and set up.
+try executing the test script, [sf3_test_sf3](#sf3_test_sf3.py), in a new shell. The script will notify the user of any
+missing dependencies that are not available in the path or for which the user does not have adequate permissions to run.
+If you plan to customize the StructureFold3 pipeline and forgo the use of suggested trimming or mapping software, these dependencies
+do not need to be installed and set up.
 
 This manual makes the best attempt possible to detail the present StructureFold3 tool set and demonstrate its use. 
 However, it is nearly impossible to plan for all contingencies. While the software is provided ‘as is’, we are eager 
@@ -105,90 +108,178 @@ a feature that would improve your overall StructureFold3 experience, please do n
 point in the future, SF3 may be available via PIP, etc.
 
 
-### Segment 1, Generating Reactivity Profiles
-The intial parts of StructureFold3 are linear. Reads are trimmed, mapped, then converted into a custom format
+### Segment 1 Overview
+Segment 1 will take raw reads and generate reactivity profiles. Reads are trimmed, mapped, then converted into a custom format
 (<.rtsc>, reverse transcriptase stop counts), before these are used to calculate reactivity (<.react>). Other 
 trimming and/or mapping software can be subsituted readily, as the first two modules are of convenience; they 
 run programs under the reccomended settings and all output is properly named and organized. Any other trimming/mapping
 protocols can be substituted, provided the end result is in <.sam> format.
 
-|Module                                         | Function                         |In   |Out  |
-|:----------------------------------------------|:---------------------------------|-----|-----|
-|[sf3_fastq_trim](#sf3_fastq_trim.py)           | Batch runs read trimming         |fastq|fastq|
-|[sf3_fastq_map](#sf3_fastq_map.py)             | Batch runs read mapping          |fastq|sam|
-|[sf3_sam_to_rtsc](#sf3_sam_to_rtsc.py)         | Extracts read stops              |sam  |rtsc|
-|[sf3_rtsc_specificity](sf3_rtsc_specificity.py)| Calculates Reagent Specificity   |rtsc |csv|
-|[sf3_rtsc_coverage](sf3_rtsc_coverage.py)      | Calculates transcript coverage   |rtsc |csv,txt|
-|[sf3_rtsc_to_react](#sf3_rtsc_to_react.py)     | Calculates reactivity            |rtsc |react|
+|Module                                          | Function                         |In   |Out    |
+|:-----------------------------------------------|:---------------------------------|-----|-------|
+|[sf3_fastq_trim](#sf3_fastq_trim.py)            | Batch runs read trimming         |fastq|fastq  |
+|[sf3_fastq_map](#sf3_fastq_map.py)              | Batch runs read mapping          |fastq|sam    |
+|[sf3_sam_to_rtsc](#sf3_sam_to_rtsc.py)          | Extracts read stops              |sam  |rtsc   |
+|[sf3_rtsc_specificity](#sf3_rtsc_specificity.py)| Calculates Reagent Specificity   |rtsc |csv    |
+|[sf3_rtsc_combine](#sf3_rtsc_combine.py)        | Combines <.rtsc> together        |rtsc |rtsc   |
+|[sf3_rtsc_coverage](#sf3_rtsc_coverage.py)      | Calculates transcript coverage   |rtsc |csv,txt|
+|[sf3_rx_correlation.py](#sf3_rx_correlation.py) | Formats stop correlation analysis|rtsc |csv    |
+|[sf3_rtsc_to_react](#sf3_rtsc_to_react.py)      | Calculates reactivity            |rtsc |react  |
 
+![](../assets/segment_1.pdf)
 
-**Trimming**
+\pagebreak
+
+### 1.1 Trim Reads
 
 Trimming is accomplished via the [sf3_fastq_trim](#sf3_fastq_trim.py) module, which drives
-cutadapt (@martin2011cutadapt). A typical analysis would simply run the module within the directory
-containing the raw <.fastq> files, generating a trimmed version of each and writing cutadapt's detailed
+cutadapt (@martin2011cutadapt). A typical analysis would simply run the module on the directory
+containing the raw <.fastq> files, generating a new directory with trimmed versions of each <.fastq>
+alongside a detailed log file generated from the output of cutadapt.
 output as a text file.
 ```
-sf3_fastq_trim.py -directory 
+sf3_fastq_trim.py -dyr <fastq_directory> -outdir <trimmed_fastqs> 
 ```
 The actual run of reverse transcriptase is infered by extacting the insert between the
 StructureSeq adapters. Inspect the log as a diagnostic. When the 3' sequencing adapter
-is trimmed, everything downstream of it is removed. Excessive loss of read length after 3'
-adapter trimming may suggest the RNA was low quality or partially degrated before the adapters were ligated.
-While trimming in general for most RNA based techniques is becoming sort of obselete given the option
-to softclip when mapping, it retains important for structure probing.
+is trimmed, everything downstream of it is also removed. Excessively short read length after 3'
+adapter trimming may suggest the RNA was low quality or partially degraded before the adapters were ligated.
+While trimming in general for most RNA based techniques is becoming sort of obselete given options
+like softcliping when mapping, it retains important for structure probing. Another trimming program/protocol
+may be subsituted for cutadapt and this step skipped entirely, so long as the user is confident all adapters
+have been removed, and trimmmed reads are available for use in mapping. This module and protocol
+are for use on non-paired end reads; this feature will be added once there are paired-end Structure-Seq
+or other analogous libraries to work with. Theoretically, unless the inserts are prohibitively small
+one would only need to trim the 5' adapter from the forward read and the 3' adapter from the reverse.
 
-**Mapping**
+### 1.2 Map Reads
 Mapping is accomplished via the [sf3_fastq_map](#sf3_fastq_map.py) module, which drives
-Bowtie2 (@langmead2012fast). A typical analysis would simply run the module within the directory 
-containing the raw <.fastq> files, generating a mapped <.sam> of each and writing a detailed log 
-output as a text file.
+Bowtie2 (@langmead2012fast) or STAR((@dobin2013star)). A typical analysis would simply run the module on
+the directory containing the trimmed <.fastq> files, generating a new directory with a corresponding mapped 
+<.sam> of each and writing a log detailing mapping statistics. Be sure to generate an appropriate index
+to map against for the program you intend to use, using the transcriptome fasta.
 ```
-sf3_fastq_map.py -directory 
+sf3_fastq_map.py -dyr <trimmed_fastqs> -outdir <mapped>
 ```
+Be sure to check the mapping statistics are reasonable given your experiment. Excessive
+multimapping can be addressed either by choosing a truncated transcriptome to map against.
+Other mapping programs/protocols may be substituted and this step skipped entirely, so long 
+as the user is confident the reads are properly mapped and in <.sam> format.
 
-**Extract Read Stops**
-Reverse transcriptase stops are extracted from mapped reads
-```
-sf3_sam_to_rtsc.py 
-```
+\pagebreak
 
-**Check Reagent Specificity**
-The specificity of libraries can be ascertained such that it matches the predicted pattern
+### 1.3 Extract Read Stops
+Reverse transcriptase stops are extracted from mapped reads via [sf3_sam_to_rtsc](#sf3_sam_to_rtsc.py).
+This process can be executed on both directories and individual files. The data at this point are
+greatly condensed, as all read and mapping information other than the nucelotide where RT stopped do
+not persist onto future steps. Running the module on directory containing mapped <.sam> files and 
+providing the index fasta file are used to generate a directory of corresponding .rtsc.
 ```
-sf3_rtsc_specificity.py
+sf3_sam_to_rtsc.py <index> -dyr <sam files> -outdir <rtsc files>
 ```
+Inspecting the log will file will indictate how many reads were incorporated into corresponding .rtsc(s), and
+how many reads were discrarded, and for what reasons. The current version of the module does not support
+paired-end reads; this feature will be added once there are paired-end Structure-Seq or other analogous 
+libraries to work with. Theoretically, paired-end reads would have an easier time finding a unique mapping
+in a transcriptome, which is great, but only the RT stop, infered from the forward read, would persist
+past this step
 
-**Calculate Read Coverage**
-The per-transcript coverage for one or multiple files is calculated
+### 1.4 Check Reagent Specificity
+The specificity of libraries should be verified to match the predicted pattern of the reagent(s)
+used in the experiment. This can be done with the [sf3_rtsc_specificity](sf3_rtsc_specificity.py)
+This will produce a detailed specificity report on each file analyzed; the process can be executed
+on both directories and individual files, and requires the index fasta file used to generate the <.rtsc>s.
+```
+sf3_rtsc_specificity.py <index> -dyr <rtsc files> 
+```
+While there is bound to be species to species differences in patterns, check that the plus reagent
+libraries show appropriate increases on the nucleotides they interact with compared to untreated libraries.
+
+### 1.5 Pool Replicates
+Replicates of the same condition/sample type can pooled using [sf3_rtsc_combine](sf3_rtsc_combine.py).
+This sums the stops on each nucleotide for each transcript, increasing depth of data. 
+```
+sf3_rtsc_combine.py <rtsc_files>
+```
+The variability between component replicates will be examined in a future step.
+
+\pagebreak
+
+### 1.6 Calculate Transcript Coverage
+The per-transcript coverage for one or multiple files is calculated via [sf3_rtsc_coverage](sf3_rtsc_coverage.py).
+Typically this is done on pooled files of plus reagent. 
 ```
 sf3_rtsc_coverage.py
 ```
-
-**Calculate Reactivity**
-
-
-### Segment 2: Reactivity Analysis
-
-**Segment 2: Reactivity Analysis**
-
-|Module                                          | Function                              |
-|:-----------------------------------------------|:--------------------------------------|
-|[sf3_react_statistics](#sf3_react_statistics.py)| Summarizes reactivity metrics         |
+This will yield both a detailed coverage report, and an overlap file listing each transcript that
+passed coverage threshold in all samples analyzed. This overlap file will be used in later modules
+to truncate analyses to only those transcripts with coverage at or above this threshold.
 
 
-### Segment 3: Folding and Subsequent Analysis
+### 1.7 Calculate Stop Correlation
+Each reagent treated replicate within each sample should be then checked for repeatability in stop patterns
+against each other treated replicate of the same sample. This can be done with the [sf3_rx_correlation.py](#sf3_rx_correlation.py)
+module. It is reccomended only to do correlation analyses on replicates of reagent treated samples, for the nucelotides
+those reagents are specific for, on transcripts where the combined coverage of all replicates exceeded the default
+threshold of one.
+```
+sf3_rx_correlation.py <index> <.rtsc files> -restrict <overlapfile>
+```
+This produces data readily fed into R(@team2013r) or any other statistical software to calculate
+reactivity correlation. A high correlation suggests good repeatability between replicates.
 
-**Segment 3: Folding and Subsequent Analysis**
+### 1.8 Calculate Reactivity
+Finally, reactivity is calculated on one or more samples using [sf3_rtsc_to_react](#sf3_rtsc_to_react.py).
+Only samples sharing the final 2-8% scale are comparable
+```
+sf3_rtsc_to_react.py
+```
+This module completes the first segment of SF3 analysis.
 
-|Module                                         | Function                              |
-|:----------------------------------------------|:--------------------------------------|
-|[sf3_batch_fold](#sf3_batch_fold.py)           | Batch runs folding programs           |
 
+### Segment 2 Overview
+Segment 2 focuses on direct analysis of transcript reactivity patterns, both
+within and between conditions. These modules do not utilize folding software, though some
+may yield subsets of reactivity files which are then used with folding software. Most
+of the the output of the modules from this segment are in formats easily used with R
+or other statistical packages.
 
+|Module                                          | Function                              |In   |Out |
+|:-----------------------------------------------|:--------------------------------------|-----|----|
+|[sf3_react_statistics](#sf3_react_statistics.py)| Summarizes reactivity metrics         |react|csv |
+|[sf3_rtsc_abundances](#sf3_rtsc_abundances.py)  | Estimates Transcript Abundance        |rtsc |csv |
 
+### 2.1 Calculate Basic Metrics
+
+### 2.2 Calcualte Transcript Abundance
+
+### Segment 3 Overview
+Segment 3 will focus on Folding and Subsequent Analysis.
+
+|Module                                                   | Function                      |In   |Out |
+|:--------------------------------------------------------|:------------------------------|-----|----|
+|[sf3_batch_fold](#sf3_batch_fold.py)                     | Batch runs folding programs   |react|ct  |
+|[sf3_structure_statistics](#sf3_structure_statistics.py) | Summarizes folded transcripts |ct   |csv |
+
+\pagebreak
 
 ## Modules
+
+### sf3_rtsc_combine.py
+Empty Placeholder
+```
+Combines <.rtsc> files, typically replicates of the same sample
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+Input:
+  rtsc        Input <.rtsc> files
+
+Output:
+  -sort       Sort output by transcript name
+  -name NAME  Specify output file name
+```
 
 ### sf3_fastq_trim.py
 This module drives cutadapt (@martin2011cutadapt) under the reccomended settings. By
@@ -197,31 +288,29 @@ Simularly, the minimum quality and minimum length parameters are set by default,
 The maximum length of a read to be accepted can also be set (-maxlen); filtering reads by the maximum length after adapter
 trimming is a circuitous way to only accept reads where adapters were both found and removed. For example, by setting 
 the maximum allowed read length under the actual lenght of the raw reads, only reads where adapters have been both detected
-and removed are accepted, ensuring that data going forward.....
+and removed are accepted, ensuring that data going forward was modified per the protcol.
 
 ```
-Batch runs folding programs
+Generates <.rtsc> files from <.sam> files
 
 optional arguments:
-  -h, --help        show this help message and exit
+  -h, --help            show this help message and exit
 
 Input:
-  -fastq f [f ...]  Input Specific <.fastq> files
-  -directory        Select all <.fastq> in a target directory
+  fasta                 Index Fasta File
+  -sam SAM [SAM ...]    Input SAM file(s)
+  -dyr DYR [DYR ...]    Input Directories
 
 Settings:
-  -fp FP            [default = TGAACAGCGACTAGGCTCTTCA] 5' adapter
-  -tp TP            [default = GATCGGAAGAGCACACGTCTG] 3' adapter
-  -minlen MINLEN    [default = 20] Minimum accepted sequence length
-  -minqual MINQUAL  [default = 30] Minumum accepted base quality
-  -maxlen MAXLEN    [default = None] Maximum seq length
-  -cores CORES      [default = 4] Number of cores to use
-  -nextseq          Use NextSeq/NovaSeq quality scores
+  -mismatches <number>  [default = 3] Maximum allowed mismatches/indels
+  -firstmm              Accept alignments with first base mismatches
+  -reverse              Accept alignments to the reverse strand
+  -rm_secondary         Remove secondary alignments
 
 Output:
-  -suffix SUFFIX    [default = trimmed] Trimmed <.fastq> file suffix
-  -logname LOGNAME  [default = trim_log] Name of the trim log file
-
+  -logname LOGNAME      [default = filter_log.csv] Log file name
+  -params PARAMS        [default = params_log.csv] Parameters file name
+  -outdir PATH          [default = rtsc] Out directory
 ```
 
 ### sf3_fastq_map.py
@@ -394,36 +483,43 @@ treated and untreated samples will detail the
 Analyzes native/reagent nucleotide RT stop specificity
 
 optional arguments:
-  -h, --help      show this help message and exit
+  -h, --help          show this help message and exit
 
 Input:
-  index           Fasta used to generate the <.rtsc>
-  rtsc            Input <.rtsc>
+  index               Fasta used to generate the <.rtsc>
+  -rtc RTC [RTC ...]  Individual <.rtsc>
+  -dyr DYR [DYR ...]  Input <.rtsc> containting Directories
 
 Settings:
-  -report REPORT  Include these nucelotides in report
-  -round DIGITS   [default = 5] Decimal places to report
+  -report REPORT      Include these nucelotides in report
+  -round DIGITS       [default = 5] Decimal places to report
 
 Output:
-  -name NAME      Specify output file name
+  -name NAME          Specify output file name
 ```
 
 ### sf3_sam_to_rtsc.py
-This module filters mapped reads in SAM format, extracting the implied
+This module filters mapped reads in sam format, extracting the implied
 reverse transcriptase (RT) stops that pass the default and/or user
 defined criteria. These stops are then written to a Reverse Transcriptase
 Stop Count <.rtsc> file to represent these stops in subsequent analysis steps.
+Longer reads may call for allowing more mismatches, as the window for error is
+greater with more bases sequenced. Input can be a mixture of individual
+files and directories, although generally it is best to work in a directory-wise
+fashion, completing this step for all samples at once, both for consistency and
+organization.
 
 **Usage**
 ```
-Converts <.sam> into reverse transcriptase stop files <.rtsc>
+Generates <.rtsc> files from <.sam> files
 
 optional arguments:
   -h, --help            show this help message and exit
 
 Input:
   fasta                 Index Fasta File
-  sam                   Input SAM file(s)
+  -sam SAM [SAM ...]    Input SAM file(s)
+  -dyr DYR [DYR ...]    Input Directories
 
 Settings:
   -mismatches <number>  [default = 3] Maximum allowed mismatches/indels
@@ -433,6 +529,7 @@ Settings:
 
 Output:
   -logname LOGNAME      [default = filter_log.csv] Log file name
+  -outdir PATH          [default = rtsc] Out directory
 ```
 
 ### sf3_fasta_stepwise.py
@@ -540,6 +637,52 @@ Output:
   -save_fails           Log transcripts with zero or missing scales
   -name NAME            Specify output file name
 ```
+
+### sf3_rx_correlation.py
+Placeholder
+```
+Reformats <.rtsc>/<.react> for easy correlation analysis
+
+optional arguments:
+  -h, --help        show this help message and exit
+
+Input:
+  fasta             Reference Fasta
+  rx                Input <.rx> files
+
+Settings:
+  -verbose          Display metrics
+  -bases ACGT       [default = ACGT] Nucleotide specifictiy
+  -restrict <.txt>  Filter to these transcripts via coverage file
+
+Output:
+  -name NAME        Specify output file name
+```
+
+### sf3_structure_statistics.py
+In PPV mode, each potential pair of input directories is fed transcript-wise through scorer, 
+reporting the PPV of accepted~predicted.
+```
+Summarizes or compares MFE <.ct> files
+
+optional arguments:
+  -h, --help          show this help message and exit
+
+Input:
+  -dyr DYR [DYR ...]  CT directories
+
+Settings:
+  -mode {R,F,P}       Raw/Fused/PPV statistics
+  -offset OFFSET      Number of Underscores in Transcript Names
+  -na NA              [default = NA] Null DeltaG value
+  -digits <number>    [default = 5] Decimal spots to report
+
+Output:
+  -name NAME          Output file name
+
+```
+
+\pagebreak
 
 ## References
 
