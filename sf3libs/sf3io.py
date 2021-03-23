@@ -111,3 +111,14 @@ def rm_ext(astring,*extensions):
     for ext in extensions:
         astring = astring.replace(ext,'')
     return astring
+
+def flatten_list(nested_list):
+    '''flattens a list'''
+    return [lemon for lime in nested_list for lemon in lime] 
+
+def write_params_log(params,out_name):
+    '''Writes parameter log'''
+    with open(out_name,'w') as g:
+        g.write(','.join(['Parameter','Value'])+'\n')
+        for p,v in sorted(vars(params).items()):
+            g.write(','.join([p,str(v)])+'\n')
