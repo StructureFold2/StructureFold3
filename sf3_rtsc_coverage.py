@@ -78,7 +78,7 @@ def main():
     #Create overlap file
     if args.ol:
         default_ol = '_'.join(sorted([fyle.replace('.rtsc','') for fyle in args.f])+['overlap',str(args.ot)])+'.txt'
-        out_ol = default_ol if args.on == None else check_extension(args.on,'.txt')
+        out_ol = default_ol if args.on == None else sfio.check_extension(args.on,'.txt')
         write_ol(coverage_data,out_ol,args.ot)
 
 if __name__ == '__main__':
